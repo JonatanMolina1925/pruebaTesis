@@ -38,16 +38,30 @@ krd2 = 0.0
 krd3 = 0.0
 krd4 = 0.0
 
+rmsX = 0.0
+rmsRuido=0.0
+
 #señal senoidal 
-x =np.sin(np.arange(0,37.7,0.0589))
+x = np.loadtxt('flicker.csv', delimiter=',')
+for n in x:
+    rmsX=rmsX+math.pow(n,2)
+# rmsX=math.sqrt(rmsX/len(x))
 # plt.plot(x)
 # plt.show()
 
 #ruido 
-ruido=np.random.normal(0,1,len(x))
-ruido = 0.1*ruido
+ruido=np.random.randn(len(x))
+ruido = ruido*0.8
+for n in x:
+    rmsRuido=rmsRuido+math.pow(n,2)
+# rmsRuido=math.sqrt(rmsRuido/len(ruido))
 # plt.plot(ruido)
 # plt.show()
+snr=math.pow(rmsX/rmsRuido,2)
+snrDB=10*math.log10(snr)
+print("RMSX: "+str(rmsX)+"\n")
+print("RMSRUIDO: "+str(rmsRuido)+"\n")
+print("SNR: "+str(snrDB)+"\n")
 
 sr=x+ruido
 # plt.plot(sr)
@@ -55,7 +69,7 @@ sr=x+ruido
 
 inicio=time.time()
 #Calculo de transformada
-cA,CD1,CD2,CD3,CD4 = pywt.wavedec(sr, 'db2', level=4)
+cA,CD1,CD2,CD3,CD4 = pywt.wavedec(sr, 'db3', level=4)
 
 #Calculo de promedio y rms
 for n in cA:
@@ -174,12 +188,12 @@ print("La desviacion estandar de CD2 es: "+str(desEstd2)+"\n")
 print("La desviacion estandar de CD3 es: "+str(desEstd3)+"\n")
 print("La desviacion estandar de CD4 es: "+str(desEstd4)+"\n")
 
-plt.subplot(8,1,1), plt.plot(x)
-plt.subplot(8,1,2), plt.plot(sr)
-plt.subplot(8,1,3), plt.plot(cA)
-plt.subplot(8,1,4), plt.plot(CD1)
-plt.subplot(8,1,5), plt.plot(CD2)
-plt.subplot(8,1,6), plt.plot(CD3)
-plt.subplot(8,1,7), plt.plot(CD4)
-plt.subplot(8,1,8), plt.plot(CD4)
+plt.subplot(7,1,1), plt.plot(x)
+plt.subplot(7,1,2), plt.plot(sr)
+plt.subplot(7,1,3), plt.plot(cA)
+plt.subplot(7,1,4), plt.plot(CD1)
+plt.subplot(7,1,5), plt.plot(CD2)
+plt.subplot(7,1,6), plt.plot(CD3)
+plt.subplot(7,1,7), plt.plot(CD4)
+# plt.subplot(7,1,8), plt.plot(CD4)
 plt.show()
